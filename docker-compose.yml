@@ -1,0 +1,46 @@
+# Usage: 
+# - docker-compose up: Start the services
+# - docker-compose down: Stop the services
+
+# Set the version of docker-compose
+version: '3.8'
+
+services:
+  # Setup the backend Node.js API
+  backend:
+    container_name: taw-backend
+    image: lorenzopastore885812/taw-backend
+    restart: always
+    # Build the Dockerfile in the api directory
+    #build: backend
+    # Set the environment variables
+    environment:
+      - MONGODB_URI=mongodb://db:27017/dbproject
+      - PORT=3000
+    ports:
+      - '3000:3000'
+
+    # Start the MongoDB service before the API service
+    depends_on:
+      - db
+
+  frontend:
+    container_name: taw-frontend
+    image: lorenzopastore885812/taw-frontend
+    restart: always
+    # Build the Dockerfile in the ui directory
+    #build: frontend
+    
+    ports:
+      - '8080:80'
+    depends_on:
+      - backend
+
+  # Setup the MongoDB service
+  db:
+    image: mongo
+    container_name: taw-mongodb
+    volumes:
+      - ./data:/data/db
+    ports:
+      - '27017:27017'
